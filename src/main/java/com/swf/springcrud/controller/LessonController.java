@@ -36,10 +36,10 @@ public class LessonController {
     public boolean deleteLessonById(@PathVariable Long id) {
         this.repository.deleteById(id);
 
-        if (this.repository.findById(id).isPresent()) {
-            return false;
-        } else {
+        if (this.repository.findById(id).isEmpty()) {
             return true;
+        } else {
+            return false;
         }
     }
 
