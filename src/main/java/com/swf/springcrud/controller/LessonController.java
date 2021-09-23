@@ -35,29 +35,22 @@ public class LessonController {
     @DeleteMapping("/{id}")
     public boolean deleteLessonById(@PathVariable Long id) {
         this.repository.deleteById(id);
-
-        if (this.repository.findById(id).isPresent()) {
-            return false;
-        } else {
-            return true;
-        }
+        return this.repository.findById(id).isEmpty();
     }
 
     @PatchMapping("/{id}")
-    public boolean updateLessonById(@PathVariable Long id, @RequestBody Lesson updateLesson) {
+    public Optional<Lesson> updateLessonById(@PathVariable Long id, @RequestBody Lesson updateLesson) {
         Optional<Lesson> optionalLesson = this.repository.findById(id);
         if (optionalLesson.isPresent()) {
             if (updateLesson.getTitle() != null) {
                 optionalLesson.get().setTitle(updateLesson.getTitle());
                 this.repository.save(optionalLesson.get());
-                return true;
             }
             if (updateLesson.getDeliveredOn() != null) {
                 optionalLesson.get().setDeliveredOn(updateLesson.getDeliveredOn());
                 this.repository.save(optionalLesson.get());
-                return true;
             }
         }
-        return false;
+        return optionalLesson;
     }
 }
