@@ -2,8 +2,11 @@ package com.swf.springcrud.controller;
 
 import com.swf.springcrud.model.Lesson;
 import com.swf.springcrud.repository.LessonRepository;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Optional;
 
 
@@ -36,28 +39,53 @@ public class LessonController {
     public boolean deleteLessonById(@PathVariable Long id) {
         this.repository.deleteById(id);
 
-        if (this.repository.findById(id).isEmpty()) {
-            return true;
-        } else {
-            return false;
-        }
+        return this.repository.findById(id).isEmpty();
     }
 
     @PatchMapping("/{id}")
     public boolean updateLessonById(@PathVariable Long id, @RequestBody Lesson updateLesson) {
+        boolean result = false;
         Optional<Lesson> optionalLesson = this.repository.findById(id);
         if (optionalLesson.isPresent()) {
             if (updateLesson.getTitle() != null) {
                 optionalLesson.get().setTitle(updateLesson.getTitle());
                 this.repository.save(optionalLesson.get());
-                return true;
+                result = true;
             }
             if (updateLesson.getDeliveredOn() != null) {
                 optionalLesson.get().setDeliveredOn(updateLesson.getDeliveredOn());
                 this.repository.save(optionalLesson.get());
-                return true;
+                result = true;
             }
         }
-        return false;
+        return result;
+    }
+
+    @GetMapping("/find/{title}")
+    public Iterable<Lesson> getLessonByTitle(@PathVariable String title){
+        return this.repository.findByTitle(title);
+    }
+
+    @GetMapping("/between")
+    public Iterable<Lesson> getLessonsBetweenTwoDates(
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date1,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date2) {
+        LocalDate firstDate;
+        LocalDate secondDate;
+        if (date1.isBefore(date2)) {
+            firstDate = date1;
+            secondDate = date2;
+        } else {
+            firstDate = date2;
+            secondDate = date1;
+        }
+
+        ArrayList<Lesson> lessonsFiltered = new ArrayList<>();
+        for (Lesson lesson : this.repository.findAll()) {
+            if (lesson.getDeliveredOn().isAfter(firstDate) && lesson.getDeliveredOn().isBefore(secondDate)) {
+                lessonsFiltered.add(lesson);
+            }
+        }
+        return lessonsFiltered;
     }
 }
