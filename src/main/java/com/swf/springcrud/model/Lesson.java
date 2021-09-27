@@ -2,12 +2,12 @@ package com.swf.springcrud.model;
 
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import lombok.Data;
+
 
 import javax.persistence.*;
+import java.time.LocalDate;
 import java.util.Date;
 
-@Data
 @Entity
 @Table(name = "lessons")
 public class Lesson {
@@ -20,6 +20,38 @@ public class Lesson {
 
     @Column(columnDefinition = "date")
     @JsonFormat(pattern = "yyyy-MM-dd")
-    private Date deliveredOn;
+    private LocalDate deliveredOn;
 
+    public Lesson(String title, LocalDate deliveredOn) {
+        this.title = title;
+        this.deliveredOn = deliveredOn;
+    }
+
+    public Lesson() {
+
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public LocalDate getDeliveredOn() {
+        return deliveredOn;
+    }
+
+    public void setDeliveredOn(LocalDate deliveredOn) {
+        this.deliveredOn = deliveredOn;
+    }
 }
