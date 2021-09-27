@@ -70,22 +70,7 @@ public class LessonController {
     public Iterable<Lesson> getLessonsBetweenTwoDates(
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date1,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date2) {
-        LocalDate firstDate;
-        LocalDate secondDate;
-        if (date1.isBefore(date2)) {
-            firstDate = date1;
-            secondDate = date2;
-        } else {
-            firstDate = date2;
-            secondDate = date1;
-        }
 
-        ArrayList<Lesson> lessonsFiltered = new ArrayList<>();
-        for (Lesson lesson : this.repository.findAll()) {
-            if (lesson.getDeliveredOn().isAfter(firstDate) && lesson.getDeliveredOn().isBefore(secondDate)) {
-                lessonsFiltered.add(lesson);
-            }
-        }
-        return lessonsFiltered;
+        return this.repository.findLessonsByDeliveredOnBetween(date1, date2);
     }
 }
